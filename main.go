@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"fullstackgo/auth"
+	"fullstackgo/campaign"
 	"fullstackgo/handler"
 	"fullstackgo/helper"
 	"fullstackgo/user"
@@ -24,6 +26,18 @@ func main() {
 	}
 
 	userRepository := user.NewRepository(db)
+	campaignRepository := campaign.NewRepository(db)
+
+	campaigns, err := campaignRepository.FindAll()
+
+	fmt.Println("debug")
+	fmt.Println("debug")
+	fmt.Println("debug")
+	// fmt.Println(len(campaigns))
+	for _, campaign := range campaigns {
+		fmt.Println(campaign.Name)
+	}
+
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 
