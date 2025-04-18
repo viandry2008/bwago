@@ -5,6 +5,7 @@ import (
 	"fullstackgo/campaign"
 	"fullstackgo/handler"
 	"fullstackgo/helper"
+	"fullstackgo/transaction"
 	"fullstackgo/user"
 	"log"
 	"net/http"
@@ -26,13 +27,16 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
+	transactionRepository := transaction.NewRepository(db)
 
 	userService := user.NewService(userRepository)
 	campaignService := campaign.NewService(campaignRepository)
 	authService := auth.NewService()
+	trasacationService := transaction.NewService(transactionRepository, campaignRepository)
 
 	userHandler := handler.NewUserHandler(userService, authService)
 	campaignHandler := handler.NewCampaignHandler(campaignService)
+	transactionHandler := handler.NewTrascationHandler(trasacationService)
 
 	router := gin.Default()
 	router.Static("/images", "./images")
@@ -48,6 +52,8 @@ func main() {
 	api.POST("/campaigns", authMidlware(authService, userService), campaignHandler.CreateCampaign)
 	api.PUT("/campaigns/:id", authMidlware(authService, userService), campaignHandler.UpdateCampaign)
 	api.POST("/campaign-images", authMidlware(authService, userService), campaignHandler.UploadImage)
+
+	api.GET("/campaigns/:id/transactions", authMidlware(authService, userService), transactionHandler.GetCampaignTransaction)
 
 	router.Run()
 }
